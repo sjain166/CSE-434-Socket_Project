@@ -78,9 +78,16 @@ public class bank {
                     case "open":
                       if(line[1].matches("[a-zA-Z]+") && line[1].length()<=15)
                       {
+                          double balance = Double.parseDouble(line[2]);
+                          int portA = Integer.parseInt(line[4]);
+                          int portB = Integer.parseInt(line[5]);
+                          
+                          customerInfo customer = new customerInfo(line[1], balance, line[3], portA, portB );
+                          open(customer);
                           break;
                           
                       }
+                      
                         
                        break;
                        
