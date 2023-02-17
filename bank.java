@@ -1,11 +1,14 @@
 
 import java.net.*;
 import java.io.*;
+import java.util.HashMap;
 
 
 
 public class bank {
-
+    static HashMap<String, customerInfo> map = new HashMap<>();
+    String init12;
+    
     public static void main(String args[]) throws IOException {
         ServerSocket server = null;
 
@@ -14,7 +17,6 @@ public class bank {
             // server is listening on port 1234
             server = new ServerSocket(1234);
             server.setReuseAddress(true);
-
             // running infinite loop for getting
             // client request
             while (true) {
@@ -117,6 +119,82 @@ public class bank {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+    
+    
+    public static class customerInfo{
+        
+        String customerName;
+        double balance;
+        String IPv4;
+        int portA;
+        int portB;
+        
+        public customerInfo(String customerName, double balance, String IPv4, int portA , int portB){
+            this.customerName = customerName;
+            this.balance = balance;
+            this.IPv4 = IPv4;
+            this.portA = portA;
+            this.portB = portB;
+        }
+        
+        public String getName(){
+            return this.customerName;
+        }
+
+        public String getCustomerName() {
+            return customerName;
+        }
+
+        public double getBalance() {
+            return balance;
+        }
+
+        public String getIPv4() {
+            return IPv4;
+        }
+
+        public int getPortA() {
+            return portA;
+        }
+
+        public int getPortB() {
+            return portB;
+        }
+
+        public void setCustomerName(String customerName) {
+            this.customerName = customerName;
+        }
+
+        public void setBalance(double balance) {
+            this.balance = balance;
+        }
+
+        public void setIPv4(String IPv4) {
+            this.IPv4 = IPv4;
+        }
+
+        public void setPortA(int portA) {
+            this.portA = portA;
+        }
+
+        public void setPortB(int portB) {
+            this.portB = portB;
+        }
+        
+
+    }
+    
+    public static String open(customerInfo customer){
+        
+        
+        if(!map.isEmpty() && map.containsKey(customer.getName())){
+            return "ERROR";
+        }
+        else{
+            map.put(customer.getName(), customer);
+            return "SUCCESS";
         }
     }
 
