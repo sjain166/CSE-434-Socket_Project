@@ -30,6 +30,7 @@ public class customer {
 
                 // displaying server reply
                 System.out.println("Server replied "+ in.readLine());
+                
             }
 
             // closing the scanner object
@@ -38,7 +39,7 @@ public class customer {
             e.printStackTrace();
         }
         
-        //Hi how are you doing today? Sidharth sucks cock for timepass
+        
 
     }
 }

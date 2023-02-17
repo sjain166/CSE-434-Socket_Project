@@ -1,7 +1,9 @@
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 
@@ -137,6 +139,7 @@ public class bank {
         String IPv4;
         int portA;
         int portB;
+        List<customerInfo> cohort = new ArrayList<>();
         
         public customerInfo(String customerName, double balance, String IPv4, int portA , int portB){
             this.customerName = customerName;
@@ -144,7 +147,18 @@ public class bank {
             this.IPv4 = IPv4;
             this.portA = portA;
             this.portB = portB;
+            cohort = null;
         }
+
+        public List<customerInfo> getCohort() {
+            return cohort;
+        }
+
+        public void setCohort(List<customerInfo> cohort) {
+            this.cohort = cohort;
+        }
+        
+        
         
         public String getName(){
             return this.customerName;
