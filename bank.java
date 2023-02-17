@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -151,8 +152,6 @@ public class bank {
             this.cohort = cohort;
         }
         
-        
-        
         public String getName(){
             return this.customerName;
         }
@@ -197,6 +196,14 @@ public class bank {
             this.portB = portB;
         }
         
+        public void printCustomer(){
+            System.out.println("Customer Name : " + this.customerName);
+            System.out.println("Customer Balance : " + this.balance);
+            System.out.println("Cutomer IPv4 : " + this.IPv4);
+            System.out.println("PortA : " + this.portA);
+            System.out.println("PortB : " + this.portB);
+        }
+        
 
     }
     
@@ -208,6 +215,11 @@ public class bank {
         }
         else{
             map.put(customer.getName(), customer);
+            for (Map.Entry<String,customerInfo> mapElement : map.entrySet()) {
+                String key = mapElement.getKey();
+                customerInfo value = (mapElement.getValue());
+                value.printCustomer();
+            }
             return "SUCCESS";
         }
     }
