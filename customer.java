@@ -30,6 +30,9 @@ public class customer {
 
                 // displaying server reply
                 System.out.println("Server replied "+ in.readLine());
+                
+                
+                // Hello Sid This side.
             }
 
             // closing the scanner object
