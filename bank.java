@@ -67,14 +67,41 @@ public class bank {
                 // get the inputstream of client
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-                String line;
-                while ((line = in.readLine()) != null) {
-
-                    // writing the received message from
-                    // client
-                    System.out.printf(" Sent from the client: %s\n",line);
-                    out.println(line);
+                String[] line;
+                line = in.readLine().split(" ");
+                String command  = line[0];
+                
+                switch(command)
+                {
+                    case "open":
+                      if(line[1].matches("[a-zA-Z]+") && line[1].length()<=15)
+                      {
+                          break;
+                          
+                      }
+                        
+                       break;
+                       
+                    case "new-cohort":
+                        
+                        break;
+                        
+                    case "delete-cohort":
+                        
+                        break;
+                        
+                    case "exit":
+                        
+                        break;
+                        
+                    default:
+                        
+                        System.out.println("Input a correct ");
                 }
+                
+                
+                
+
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
