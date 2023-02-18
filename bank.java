@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 
 
 public class bank {
     static HashMap<String, customerInfo> map = new HashMap<>();
-    String init12;
     
     public static void main(String args[]) throws IOException {
         ServerSocket server = null;
@@ -27,17 +27,21 @@ public class bank {
                 // socket object to receive incoming client
                 // requests
                 Socket client = server.accept();
-
-                // Displaying that new client is connected
-                // to server
+//
+//                // Displaying that new client is connected
+//                // to server
                 System.out.println("New client connected"+ client.getInetAddress().getHostAddress());
-
-                // create a new thread object
+//
+//                // create a new thread object
                 ClientHandler clientSock = new ClientHandler(client);
-
-                // This thread will handle the client
-                // separately
+                
+//
+//                // This thread will handle the client
+//                // separately
                 new Thread(clientSock).start();
+                  
+                    
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,21 +61,27 @@ public class bank {
         private final Socket clientSocket;
 
         // Constructor
+        public ClientHandler(){
+            this.clientSocket = null;
+        }
+        
         public ClientHandler(Socket socket) {
             this.clientSocket = socket;
         }
 
         public void run() {
+            System.out.println("NULL");
             PrintWriter out = null;
             BufferedReader in = null;
             try {
 
-                // get the outputstream of client
-                out = new PrintWriter(clientSocket.getOutputStream(), true);
-
-                // get the inputstream of client
-                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
+////                // get the outputstream of client
+               out = new PrintWriter(clientSocket.getOutputStream(), true);
+////
+////                // get the inputstream of client
+               in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+//                
+//
                 String[] line;
                 line = in.readLine().split(" ");
                 String command  = line[0];
@@ -86,7 +96,7 @@ public class bank {
                           int portB = Integer.parseInt(line[5]);
                           
                           customerInfo customer = new customerInfo(line[1], balance, line[3], portA, portB );
-                          open(customer);
+                          System.out.println(open(customer));
                           break;
                           
                       }
@@ -114,7 +124,7 @@ public class bank {
                 
                 
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 try {
@@ -229,6 +239,40 @@ public class bank {
             }
             return "SUCCESS";
         }
+    }
+    
+    public static String newCohort(String customerName , int n){
+        
+        
+        if(n < map.size() || !map.containsKey(customerName)){
+            return "FAILURE";
+        }
+        
+        customerInfo currCust = map.get(customerName);
+        int count = 1;
+        List<customerInfo> generatedCohort = new ArrayList<>();
+        generatedCohort.add(currCust);
+        
+        for (Map.Entry<String,customerInfo> mapElement : map.entrySet()) {
+            if(count >= n){
+                break;
+            }
+            
+            customerInfo value = (mapElement.getValue());
+            if(value.getCohort() == null){
+                count++;
+                generatedCohort.add(value);
+            }
+                
+        }
+        
+        if (count == n) {
+            for(int i = 0 ; i < generatedCohort.size() ; i++){
+                generatedCohort.get(i).setCohort(generatedCohort);
+            }
+        }
+        
+        return "SUCCESS";
     }
 
 }
