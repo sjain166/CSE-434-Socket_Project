@@ -94,17 +94,35 @@ public class bank {
                           double balance = Double.parseDouble(line[2]);
                           int portA = Integer.parseInt(line[4]);
                           int portB = Integer.parseInt(line[5]);
+                          if(portA>=14000 && portA<=14499 && portB>=14000 && portB<=14499)
+                          {
+                              customerInfo customer = new customerInfo(line[1], balance, line[3], portA, portB );
+                              out.println(open(customer));
+                              out.flush();
+                              break;
+                          }
+                          else{
+                              out.println("Failure");
+                              out.flush();
+                          }
+                              
                           
                           customerInfo customer = new customerInfo(line[1], balance, line[3], portA, portB );
                           System.out.println(open(customer));
                           break;
                           
                       }
+                      else{
+                              out.println("Failure");
+                              out.flush();
+                      }
                       
                         
                        break;
                        
                     case "new-cohort":
+                        
+                        
                         
                         break;
                         
@@ -231,6 +249,7 @@ public class bank {
             return "ERROR";
         }
         else{
+            System.out.println("Success");
             map.put(customer.getName(), customer);
             for (Map.Entry<String,customerInfo> mapElement : map.entrySet()) {
                 String key = mapElement.getKey();
@@ -274,5 +293,6 @@ public class bank {
         
         return "SUCCESS";
     }
+   
 
 }
