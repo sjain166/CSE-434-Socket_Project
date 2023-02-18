@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-
-
 public class bank {
+
     static HashMap<String, customerInfo> map = new HashMap<>();
-    
+
     public static void main(String args[]) throws IOException {
         ServerSocket server = null;
 
@@ -30,17 +29,15 @@ public class bank {
 //
 //                // Displaying that new client is connected
 //                // to server
-                System.out.println("New client connected"+ client.getInetAddress().getHostAddress());
+                System.out.println("New client connected" + client.getInetAddress().getHostAddress());
 //
 //                // create a new thread object
                 ClientHandler clientSock = new ClientHandler(client);
-                
+
 //
 //                // This thread will handle the client
 //                // separately
                 new Thread(clientSock).start();
-                  
-                    
 
             }
         } catch (IOException e) {
@@ -61,10 +58,10 @@ public class bank {
         private final Socket clientSocket;
 
         // Constructor
-        public ClientHandler(){
+        public ClientHandler() {
             this.clientSocket = null;
         }
-        
+
         public ClientHandler(Socket socket) {
             this.clientSocket = socket;
         }
@@ -76,75 +73,70 @@ public class bank {
             try {
 
 ////                // get the outputstream of client
-               out = new PrintWriter(clientSocket.getOutputStream(), true);
-////
-////                // get the inputstream of client
-               in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//                
-//
-                String[] line;
-                line = in.readLine().split(" ");
-                String command  = line[0];
-                
-                switch(command)
-                {
-                    case "open":
-                      if(line[1].matches("[a-zA-Z]+") && line[1].length()<=15)
-                      {
-                          double balance = Double.parseDouble(line[2]);
-                          int portA = Integer.parseInt(line[4]);
-                          int portB = Integer.parseInt(line[5]);
-                          if(portA>=14000 && portA<=14499 && portB>=14000 && portB<=14499)
-                          {
-                              customerInfo customer = new customerInfo(line[1], balance, line[3], portA, portB );
-                              out.println(open(customer));
-                              out.flush();
-                              break;
-                          }
-                          else{
-                              out.println("Failure");
-                              out.flush();
-                          }
-                              
-                          
-                          customerInfo customer = new customerInfo(line[1], balance, line[3], portA, portB );
-                          System.out.println(open(customer));
-                          break;
-                          
-                      }
-                      else{
-                              out.println("Failure");
-                              out.flush();
-                      }
-                      
-                        
-                       break;
-                       
-                    case "new-cohort":
-                        
-                        
-                        
-                        break;
-                        
-                    case "delete-cohort":
-                        
-                        break;
-                        
-                    case "exit":
-                        
-                        break;
-                        
-                    default:
-                        
-                        System.out.println("Input a correct ");
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+                String input;
+                while ((input = in.readLine()) != null) {
+                    String command = "";
+                    String[] line = input.split(" ");
+                    //line = in.readLine().split(" ");
+                    command = line[0];
+                    System.out.println(command);
+
+                    switch (command) {
+                        case "open":
+                            if (line[1].matches("[a-zA-Z]+") && line[1].length() <= 15) {
+                                double balance = Double.parseDouble(line[2]);
+                                int portA = Integer.parseInt(line[4]);
+                                int portB = Integer.parseInt(line[5]);
+                                if (portA >= 14000 && portA <= 14499 && portB >= 14000 && portB <= 14499) {
+                                    customerInfo customer = new customerInfo(line[1], balance, line[3], portA, portB);
+                                    out.println(open(customer));
+                                    out.flush();
+                                } else {
+                                    out.println("Failure");
+                                    out.flush();
+                                }
+
+                            } else {
+                                out.println("Failure");
+                                out.flush();
+                            }
+
+                            break;
+
+                        case "new-cohort":
+                            String cName = line[1];
+                            int n = Integer.parseInt(line[2]);
+                            out.println(newCohort(cName, n));
+                            out.flush();
+                            //map.get(cName).printCohort();
+                            break;
+
+                        case "delete-cohort":
+
+                            break;
+
+                        case "exit":
+
+                            break;
+
+                        case "print":
+                            print();
+                            out.println("Printing");
+                            out.flush();
+                            break;
+                        default:
+                            System.out.println("Input a correct ");
+                    }
+
                 }
-                
-                
-                
 
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
+                System.out.println("I am coming here");
                 try {
                     if (out != null) {
                         out.close();
@@ -159,18 +151,17 @@ public class bank {
             }
         }
     }
-    
-    
-    public static class customerInfo{
-        
+
+    public static class customerInfo {
+
         String customerName;
         double balance;
         String IPv4;
         int portA;
         int portB;
         List<customerInfo> cohort = new ArrayList<>();
-        
-        public customerInfo(String customerName, double balance, String IPv4, int portA , int portB){
+
+        public customerInfo(String customerName, double balance, String IPv4, int portA, int portB) {
             this.customerName = customerName;
             this.balance = balance;
             this.IPv4 = IPv4;
@@ -186,8 +177,8 @@ public class bank {
         public void setCohort(List<customerInfo> cohort) {
             this.cohort = cohort;
         }
-        
-        public String getName(){
+
+        public String getName() {
             return this.customerName;
         }
 
@@ -230,8 +221,8 @@ public class bank {
         public void setPortB(int portB) {
             this.portB = portB;
         }
-        
-        public void printCustomer(){
+
+        public void printCustomer() {
             System.out.println("Customer Name : " + this.customerName);
             System.out.println("Customer Balance : " + this.balance);
             System.out.println("Cutomer IPv4 : " + this.IPv4);
@@ -239,60 +230,76 @@ public class bank {
             System.out.println("PortB : " + this.portB);
         }
         
+        public void printCohort(){
+            if(this.cohort.isEmpty()){
+                System.out.println("Do not have a cohort");
+                return;
+            }
+            for(customerInfo i : cohort){
+                i.printCustomer();
+            }
+        }
 
     }
-    
-    public static String open(customerInfo customer){
-        
-        
-        if(!map.isEmpty() && map.containsKey(customer.getName())){
-            return "ERROR";
+
+    public static void print() {
+
+        System.out.println("I am in print");
+        System.out.println(map.size());
+        for (Map.Entry<String, customerInfo> mapElement : map.entrySet()) {
+            String key = mapElement.getKey();
+            customerInfo value = (mapElement.getValue());
+            value.printCustomer();
         }
-        else{
+    }
+
+    public static String open(customerInfo customer) {
+
+        if (!map.isEmpty() && map.containsKey(customer.getName())) {
+            return "ERROR";
+        } else {
             System.out.println("Success");
             map.put(customer.getName(), customer);
-            for (Map.Entry<String,customerInfo> mapElement : map.entrySet()) {
-                String key = mapElement.getKey();
-                customerInfo value = (mapElement.getValue());
-                value.printCustomer();
-            }
             return "SUCCESS";
         }
     }
-    
-    public static String newCohort(String customerName , int n){
-        
-        
-        if(n < map.size() || !map.containsKey(customerName)){
+
+    public static String newCohort(String customerName, int n) {
+
+        if (n > map.size() || !map.containsKey(customerName) || n < 2) {
             return "FAILURE";
         }
-        
+
         customerInfo currCust = map.get(customerName);
+        if(currCust.getCohort() != null){
+            return "FAILURE";
+        }
         int count = 1;
         List<customerInfo> generatedCohort = new ArrayList<>();
         generatedCohort.add(currCust);
-        
-        for (Map.Entry<String,customerInfo> mapElement : map.entrySet()) {
-            if(count >= n){
+
+        for (Map.Entry<String, customerInfo> mapElement : map.entrySet()) {
+            if (count == n) {
                 break;
             }
-            
+
             customerInfo value = (mapElement.getValue());
-            if(value.getCohort() == null){
+            if (value.getCohort() == null && !value.customerName.equals(customerName)) {
                 count++;
                 generatedCohort.add(value);
             }
-                
+
         }
-        
+
         if (count == n) {
-            for(int i = 0 ; i < generatedCohort.size() ; i++){
+            for (int i = 0; i < generatedCohort.size(); i++) {
                 generatedCohort.get(i).setCohort(generatedCohort);
             }
+            return "SUCCESS";
         }
-        
-        return "SUCCESS";
+
+        return "FAILURE";
+
     }
-   
 
 }
