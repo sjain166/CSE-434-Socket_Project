@@ -109,7 +109,12 @@ public class bank {
                         case "new-cohort":
                             String cName = line[1];
                             int n = Integer.parseInt(line[2]);
-                            out.println(newCohort(cName, n));
+                            String value = newCohort(cName, n);
+//                            for(int i = 0 ; i <= n+2 ; i++){
+//                                
+//                            }
+                            
+                            out.println(value);
                             out.flush();
                             //map.get(cName).printCohort();
                             break;
@@ -128,6 +133,8 @@ public class bank {
                             out.flush();
                             break;
                         default:
+                            out.println("FAILURE");
+                            out.flush();
                             System.out.println("Input a correct ");
                     }
 
@@ -292,10 +299,15 @@ public class bank {
         }
 
         if (count == n) {
+            String ret = "SUCCESS#";
+            ret += "Customer\t\tBalance\t\tIPv4 Address\t\tPort(s)#";
             for (int i = 0; i < generatedCohort.size(); i++) {
+                
                 generatedCohort.get(i).setCohort(generatedCohort);
+                ret+= generatedCohort.get(i).getCustomerName()+"\t\t"+generatedCohort.get(i).getBalance()+"\t\t"+generatedCohort.get(i).getIPv4()+"\t\t"+generatedCohort.get(i).getPortA()+" " + generatedCohort.get(i).getPortB()+"#";
             }
-            return "SUCCESS";
+            System.out.println(ret);
+            return ret;
         }
 
         return "FAILURE";

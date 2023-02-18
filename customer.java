@@ -27,9 +27,29 @@ public class customer {
                 // sending the user input to server
                 out.println(line);
                 out.flush();
-
+                
+                String valueFromServer = in.readLine();
+                for(int i = 0 ; i < valueFromServer.length(); i++){
+                    if(valueFromServer.charAt(i) == '#'){
+                        System.out.println("");
+                    }
+                    else
+                        System.out.print(valueFromServer.charAt(i));
+                }
+                System.out.println("");
+                
                 // displaying server reply
-                System.out.println("Server replied "+ in.readLine());
+                
+//                System.out.println("Server Replied :");
+//                String reply;
+//                while (!(reply = in.readLine()).equals("")) {
+//                    System.out.println(reply);
+//                    System.out.println("123");
+//                }
+
+//                do{
+//                   System.out.println("Server replied "+ in.readLine()); 
+//                }while(in.readLine() != null);
                 
             }
 
