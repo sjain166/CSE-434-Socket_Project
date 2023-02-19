@@ -117,7 +117,12 @@ public class bank {
 
                         case "exit":
                             cName = line[1];
-                            out.print(exit(cName));
+                            if(exit(cName)=="SUCCESS"){
+                                out.print("SUCCESS/ndisconnected");
+                            }
+                            else{
+                                out.print("FAILURE");
+                            }
                             break;
 
                         case "print":
