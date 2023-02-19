@@ -14,12 +14,18 @@ public class customer {
                 socket = new Socket("localhost", 14000);
                 socket.setReuseAddress(true);
                 
-                sendServer msgToServer = new sendServer(socket);
                 receieServer msgFromServer = new receieServer(socket);
+                Thread thread = new Thread(msgFromServer);
+                thread.start(); 
                 
-                new Thread(msgToServer).start();
-                new Thread(msgFromServer).start();
+                sendServer msgToServer = new sendServer(socket , thread);
+                Thread thread2 = new Thread(msgToServer);
+                thread2.start();
                 
+                while(thread.isAlive() && thread2.isAlive()){                 
+                }
+                
+                socket.close();
             }
             catch(Exception e){
                 e.printStackTrace();
@@ -29,10 +35,13 @@ public class customer {
     
     private static class sendServer implements Runnable{
         private final Socket serverSocket;
+        private static Thread serverThread;
         
-        public sendServer(Socket socket){
+        public sendServer(Socket socket , Thread serverThread){
             serverSocket = socket;
+            this.serverThread = serverThread;
         }
+        
         PrintWriter out = null; 
         public void run() {
             try{
@@ -40,14 +49,16 @@ public class customer {
                 Scanner sc = new Scanner(System.in);
                 String line = null;
                 
-                while (!serverSocket.isClosed()) {
+                while (serverThread.isAlive()) {
                  line = sc.nextLine();
                  // sending the user input to server
                  out.println(line);
-                 out.flush();    
+                 out.flush();
+                 Thread.sleep(500);
                 }
                 
-                sc.close();  
+                sc.close();
+                out.close();
             }
             catch(Exception e){
                 e.printStackTrace();
@@ -70,8 +81,8 @@ public class customer {
                 while(!(reply = in.readLine()).equals("disconnected")) {
                     System.out.println(reply);
                 }
-                serverSocket.close();
-                
+                in.close();
+                //System.out.println("Reading Thread Disconnected");
             } catch (Exception e) {
                e.printStackTrace();
             }

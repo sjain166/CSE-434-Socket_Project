@@ -25,7 +25,7 @@ public class bank {
                 Socket client = server.accept();
 
 
-                System.out.println("New client connected" + client.getInetAddress().getHostAddress());
+                System.out.println("New client got connected!!!");
 
 
                 ClientHandler clientSock = new ClientHandler(client);
@@ -50,6 +50,7 @@ public class bank {
     private static class ClientHandler implements Runnable {
 
         private final Socket clientSocket;
+        private customerInfo customer;
 
         public ClientHandler() {
             this.clientSocket = null;
@@ -68,7 +69,7 @@ public class bank {
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 String input;
-                while ((input = in.readLine()) != null) {
+                while (!clientSocket.isClosed()&&(input = in.readLine()) != null) {
                     String command = "";
                     String[] line = input.split(" ");
                     command = line[0];
@@ -117,11 +118,16 @@ public class bank {
 
                         case "exit":
                             cName = line[1];
-                            if(exit(cName)=="SUCCESS"){
-                                out.print("SUCCESS\ndisconnected");
+                            if(exit(cName).equals("SUCCESS")){
+                                out.println("SUCCESS");
+                                out.flush();
+                                out.println("disconnected");
+                                out.flush();
+                                
                             }
                             else{
                                 out.print("FAILURE");
+                                out.flush();
                             }
                             break;
 
@@ -354,6 +360,7 @@ public class bank {
             return "FAILURE";
         }
         else{
+            System.out.println(customerName + " got disconnected!!!");
             map.remove(customerName);
             return "SUCCESS";
         }
