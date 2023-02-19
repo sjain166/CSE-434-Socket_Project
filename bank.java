@@ -91,7 +91,7 @@ public class bank {
                                 int portA = Integer.parseInt(line[4]);
                                 int portB = Integer.parseInt(line[5]);
                                 if (portA >= 14000 && portA <= 14499 && portB >= 14000 && portB <= 14499) {
-                                    customerInfo customer = new customerInfo(line[1], balance, line[3], portA, portB);
+                                    customerInfo customer = new customerInfo(line[1], balance, line[3], portA, portB , clientSocket);
                                     out.println(open(customer));
                                     out.flush();
                                 } else {
@@ -120,11 +120,20 @@ public class bank {
                             break;
 
                         case "delete-cohort":
-
+                            cName = line[1];
+                            if(deleteCohort(cName)){
+                                out.println("SUCCESS#The cohort has been deleted");
+                                out.flush();
+                            }
+                            else{
+                               out.println("FAILURE");
+                               out.flush(); 
+                            }
                             break;
 
                         case "exit":
-
+                            cName = line[1];
+                            out.print(exit(cName));
                             break;
 
                         case "print":
@@ -166,15 +175,25 @@ public class bank {
         String IPv4;
         int portA;
         int portB;
+        Socket clientSocket;
         List<customerInfo> cohort = new ArrayList<>();
 
-        public customerInfo(String customerName, double balance, String IPv4, int portA, int portB) {
+        public customerInfo(String customerName, double balance, String IPv4, int portA, int portB, Socket clientSocket) {
             this.customerName = customerName;
             this.balance = balance;
             this.IPv4 = IPv4;
             this.portA = portA;
             this.portB = portB;
             cohort = null;
+            this.clientSocket = clientSocket;
+        }
+           
+        public Socket getClientSocket() {
+            return clientSocket;
+        }
+
+        public void setClientSocket(Socket clientSocket) {
+            this.clientSocket = clientSocket;
         }
 
         public List<customerInfo> getCohort() {
@@ -312,6 +331,43 @@ public class bank {
 
         return "FAILURE";
 
+    }
+    
+    
+    public static boolean deleteCohort(String customerName) throws IOException{
+        
+        if(map.isEmpty() || !(map.containsKey(customerName))){
+            return false;
+        }
+        customerInfo currCust = map.get(customerName);
+        
+        if(currCust.getCohort() == null){
+           return false; 
+        }
+        
+        List<customerInfo> cohort = currCust.getCohort();
+        PrintWriter out = null;
+        for(customerInfo i : cohort){
+            if(i.getCustomerName() != customerName){
+                out = new PrintWriter(i.getClientSocket().getOutputStream(), true);
+                out.println("You have been removed from the cohort.");
+                out.flush();
+            }
+            i.setCohort(null);
+        }
+        
+        return true;
+    }
+    
+    
+    public static String exit(String customerName){
+        if(map.isEmpty() || !map.containsKey(customerName) || map.get(customerName).getCohort() != null){
+            return "FAILURE";
+        }
+        else{
+            map.remove(customerName);
+            return "SUCCESS";
+        }
     }
 
 }
