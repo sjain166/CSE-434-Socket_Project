@@ -16,27 +16,21 @@ public class bank {
 
         try {
 
-            // server is listening on port 1234
-            server = new ServerSocket(1234);
+            server = new ServerSocket(14000);
             server.setReuseAddress(true);
-            // running infinite loop for getting
-            // client request
+
             while (true) {
 
-                // socket object to receive incoming client
-                // requests
+
                 Socket client = server.accept();
-//
-//                // Displaying that new client is connected
-//                // to server
+
+
                 System.out.println("New client connected" + client.getInetAddress().getHostAddress());
-//
-//                // create a new thread object
+
+
                 ClientHandler clientSock = new ClientHandler(client);
 
-//
-//                // This thread will handle the client
-//                // separately
+
                 new Thread(clientSock).start();
 
             }
@@ -57,7 +51,6 @@ public class bank {
 
         private final Socket clientSocket;
 
-        // Constructor
         public ClientHandler() {
             this.clientSocket = null;
         }
@@ -67,12 +60,10 @@ public class bank {
         }
 
         public void run() {
-            System.out.println("NULL");
             PrintWriter out = null;
             BufferedReader in = null;
             try {
-
-////                // get the outputstream of client
+                
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
@@ -80,9 +71,7 @@ public class bank {
                 while ((input = in.readLine()) != null) {
                     String command = "";
                     String[] line = input.split(" ");
-                    //line = in.readLine().split(" ");
                     command = line[0];
-                    System.out.println(command);
 
                     switch (command) {
                         case "open":
@@ -95,12 +84,12 @@ public class bank {
                                     out.println(open(customer));
                                     out.flush();
                                 } else {
-                                    out.println("Failure");
+                                    out.println("FAILURE");
                                     out.flush();
                                 }
 
                             } else {
-                                out.println("Failure");
+                                out.println("FAILURE");
                                 out.flush();
                             }
 
@@ -109,20 +98,15 @@ public class bank {
                         case "new-cohort":
                             String cName = line[1];
                             int n = Integer.parseInt(line[2]);
-                            String value = newCohort(cName, n);
-//                            for(int i = 0 ; i <= n+2 ; i++){
-//                                
-//                            }
-                            
+                            String value = newCohort(cName, n);                       
                             out.println(value);
                             out.flush();
-                            //map.get(cName).printCohort();
                             break;
 
                         case "delete-cohort":
                             cName = line[1];
                             if(deleteCohort(cName)){
-                                out.println("SUCCESS#The cohort has been deleted");
+                                out.println("SUCCESS\nThe cohort has been deleted");
                                 out.flush();
                             }
                             else{
@@ -138,13 +122,11 @@ public class bank {
 
                         case "print":
                             print();
-                            out.println("Printing");
-                            out.flush();
                             break;
                         default:
                             out.println("FAILURE");
                             out.flush();
-                            System.out.println("Input a correct ");
+                            System.out.println("Incoreect Input");
                     }
 
                 }
@@ -152,7 +134,6 @@ public class bank {
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                System.out.println("I am coming here");
                 try {
                     if (out != null) {
                         out.close();
@@ -253,7 +234,7 @@ public class bank {
             System.out.println("Customer Balance : " + this.balance);
             System.out.println("Cutomer IPv4 : " + this.IPv4);
             System.out.println("PortA : " + this.portA);
-            System.out.println("PortB : " + this.portB);
+            System.out.println("PortB : " + this.portB+"\n");
         }
         
         public void printCohort(){
@@ -269,9 +250,6 @@ public class bank {
     }
 
     public static void print() {
-
-        System.out.println("I am in print");
-        System.out.println(map.size());
         for (Map.Entry<String, customerInfo> mapElement : map.entrySet()) {
             String key = mapElement.getKey();
             customerInfo value = (mapElement.getValue());
@@ -282,9 +260,8 @@ public class bank {
     public static String open(customerInfo customer) {
 
         if (!map.isEmpty() && map.containsKey(customer.getName())) {
-            return "ERROR";
+            return "FAILURE";
         } else {
-            System.out.println("Success");
             map.put(customer.getName(), customer);
             return "SUCCESS";
         }
@@ -318,14 +295,21 @@ public class bank {
         }
 
         if (count == n) {
-            String ret = "SUCCESS#";
-            ret += "Customer\t\tBalance\t\tIPv4 Address\t\tPort(s)#";
+            String ret = "SUCCESS\n";
+            ret += String.format("%s", "Customer");
+            ret += String.format("%30s", "Balance");
+            ret += String.format("%30s", "IPv4 Address");
+            ret += String.format("%30s", "Port(s)\n");
+            
             for (int i = 0; i < generatedCohort.size(); i++) {
                 
                 generatedCohort.get(i).setCohort(generatedCohort);
-                ret+= generatedCohort.get(i).getCustomerName()+"\t\t"+generatedCohort.get(i).getBalance()+"\t\t"+generatedCohort.get(i).getIPv4()+"\t\t"+generatedCohort.get(i).getPortA()+" " + generatedCohort.get(i).getPortB()+"#";
+                ret += String.format("%s",generatedCohort.get(i).getCustomerName());
+                ret += String.format("%30.3f",generatedCohort.get(i).getBalance());
+                ret += String.format("%30s",generatedCohort.get(i).getIPv4());
+                ret += String.format("%30d",generatedCohort.get(i).getPortA());
+                ret += " " + generatedCohort.get(i).getPortB()+"\n";
             }
-            System.out.println(ret);
             return ret;
         }
 
