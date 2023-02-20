@@ -69,7 +69,8 @@ public class bank {
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 String input;
-                while (!clientSocket.isClosed()&&(input = in.readLine()) != null) {
+                do{
+                    input = in.readLine();
                     String command = "";
                     String[] line = input.split(" ");
                     command = line[0];
@@ -140,7 +141,7 @@ public class bank {
                             System.out.println("Incoreect Input");
                     }
 
-                }
+                }while (!clientSocket.isClosed()&& input != null && !map.isEmpty()); 
 
             } catch (Exception e) {
                 e.printStackTrace();

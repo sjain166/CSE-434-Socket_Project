@@ -11,7 +11,7 @@ public class customer {
     public static void main(String args[]) throws IOException {
             Socket socket = null;
             try{
-                socket = new Socket("localhost", 14000);
+                socket = new Socket("10.120.70.113", 14000);
                 socket.setReuseAddress(true);
                 
                 receieServer msgFromServer = new receieServer(socket);
