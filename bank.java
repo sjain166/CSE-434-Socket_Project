@@ -44,6 +44,8 @@ public class bank {
             }
         }
     }
+    
+    
     // This class implements the Runnable interface to handle client requests
     private static class ClientHandler implements Runnable {
         
@@ -103,6 +105,7 @@ public class bank {
                             String cName = line[1];
                             int n = Integer.parseInt(line[2]);
                             String value = newCohort(cName, n);
+                            sendMembersInfo(cName);
                             out.println(value);
                             out.flush();
                             break;
@@ -159,9 +162,42 @@ public class bank {
                 }
             }
         }
+        
     }
+    
+    public static boolean sendMembersInfo(String customerName) throws IOException{
+        
+        if (map.isEmpty() || !(map.containsKey(customerName))) {
+            return false;
+        }
+        customerInfo currCust = map.get(customerName);
 
-    public static class customerInfo {
+        if (currCust.getCohort() == null) {
+            return false;
+        }
+
+        List<customerInfo> cohort = currCust.getCohort();
+        
+        PrintWriter out = null;
+        ObjectOutputStream objectOutput = null;
+        for (customerInfo i : cohort) {
+  
+                out = new PrintWriter(i.getClientSocket().getOutputStream(), true);
+                out.println("You have been added to the cohort");
+                out.flush();
+                
+                objectOutput = new ObjectOutputStream(i.getClientSocket().getOutputStream());
+                objectOutput.writeObject(cohort);
+                objectOutput.close();
+    
+        }
+
+        return true;
+    }
+    
+    
+    
+    public static class customerInfo implements Serializable {
 
         String customerName;
         double balance;
@@ -169,7 +205,7 @@ public class bank {
         int portA;
         int portB;
         Socket clientSocket;
-        List<customerInfo> cohort = new ArrayList<>();
+        ArrayList<customerInfo> cohort = new ArrayList<customerInfo>();
 
         //customerInfo class defines the properties of the customer such as the name, balance, IPv4address etc.
         public customerInfo(String customerName, double balance, String IPv4, int portA, int portB, Socket clientSocket) {
@@ -193,11 +229,11 @@ public class bank {
             this.clientSocket = clientSocket;
         }
 
-        public List<customerInfo> getCohort() {
+        public ArrayList<customerInfo> getCohort() {
             return cohort;
         }
 
-        public void setCohort(List<customerInfo> cohort) {
+        public void setCohort(ArrayList<customerInfo> cohort) {
             this.cohort = cohort;
         }
 
@@ -299,7 +335,7 @@ public class bank {
             return "FAILURE";
         }
         int count = 1;
-        List<customerInfo> generatedCohort = new ArrayList<>();
+        ArrayList<customerInfo> generatedCohort = new ArrayList<>();
         generatedCohort.add(currCust);
 
         //Adds random customer to the cohort whose cohort value is null

@@ -4,16 +4,20 @@ import java.io.IOException;
 import java.io.*;
 import java.util.Scanner;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class customer {
-
+    
+    public ArrayList<customerInfo> cohortList = new ArrayList<>();
+    
     public static void main(String args[]) throws IOException {
             Socket socket = null;
             try{
 				//Creating a New Socket Object and Assigning the Server IP address and port
-                socket = new Socket("10.120.70.113", 14000);
+                socket = new Socket("localhost", 14000);
 				//Setting the Socket as Reusable for multiple thread option.
                 socket.setReuseAddress(true);
                 
@@ -112,8 +116,24 @@ public class customer {
                 System.out.println("Connected to Bank :\n");
                 String reply;
 				//Reading all responce from server, line-by-line till it reads 'disconnected'
+                boolean startCohort = false;
+                                
                 while(!(reply = in.readLine()).equals("disconnected")) {
+                    if(reply.equals("You have been added to the cohort")){
+                        try{
+                            ObjectInputStream obj = new ObjectInputStream(serverSocket.getInputStream());
+                            Object object = obj.readObject();
+                            ArrayList<customerInfo> arr = (ArrayList<customerInfo>) object;
+                            arr.get(0).printCohort();
+                            obj.close();
+                            Thread.sleep(500);
+                        }
+                        catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
                     System.out.println(reply);
+                    
                 }
 				//Closing the BR object.
                 in.close();
@@ -122,7 +142,115 @@ public class customer {
             }
             
         }
+        
+
              
+    }
+    
+    
+    public static class customerInfo implements Serializable {
+
+        String customerName;
+        double balance;
+        String IPv4;
+        int portA;
+        int portB;
+        Socket clientSocket;
+        ArrayList<customerInfo> cohort = new ArrayList<customerInfo>();
+
+        //customerInfo class defines the properties of the customer such as the name, balance, IPv4address etc.
+        public customerInfo(String customerName, double balance, String IPv4, int portA, int portB, Socket clientSocket) {
+            
+            //Customer information 
+            this.customerName = customerName;
+            this.balance = balance;
+            this.IPv4 = IPv4;
+            this.portA = portA;
+            this.portB = portB;
+            cohort = null;
+            this.clientSocket = clientSocket;
+        }
+        //Getters and Setter Functions
+
+        public Socket getClientSocket() {
+            return clientSocket;
+        }
+
+        public void setClientSocket(Socket clientSocket) {
+            this.clientSocket = clientSocket;
+        }
+
+        public List<customerInfo> getCohort() {
+            return cohort;
+        }
+
+        public void setCohort(ArrayList<customerInfo> cohort) {
+            this.cohort = cohort;
+        }
+
+        public String getName() {
+            return this.customerName;
+        }
+
+        public String getCustomerName() {
+            return customerName;
+        }
+
+        public double getBalance() {
+            return balance;
+        }
+
+        public String getIPv4() {
+            return IPv4;
+        }
+
+        public int getPortA() {
+            return portA;
+        }
+
+        public int getPortB() {
+            return portB;
+        }
+
+        public void setCustomerName(String customerName) {
+            this.customerName = customerName;
+        }
+
+        public void setBalance(double balance) {
+            this.balance = balance;
+        }
+
+        public void setIPv4(String IPv4) {
+            this.IPv4 = IPv4;
+        }
+
+        public void setPortA(int portA) {
+            this.portA = portA;
+        }
+
+        public void setPortB(int portB) {
+            this.portB = portB;
+        }
+
+        //Prints Customer Information
+        public void printCustomer() {
+            System.out.println("Customer Name : " + this.customerName);
+            System.out.println("Customer Balance : " + this.balance);
+            System.out.println("Cutomer IPv4 : " + this.IPv4);
+            System.out.println("PortA : " + this.portA);
+            System.out.println("PortB : " + this.portB + "\n");
+        }
+
+        public void printCohort() {
+            if (this.cohort.isEmpty()) {
+                System.out.println("Do not have a cohort");
+                return;
+            }
+            for (customerInfo i : cohort) {
+                i.printCustomer();
+            }
+        }
+
     }
    
 }
