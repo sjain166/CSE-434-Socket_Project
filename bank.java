@@ -81,7 +81,7 @@ public class bank {
                     switch (command) {
                         //If the open command is received the ClientHandler class will check if the command is valid and create a customer object if it and if not a Failure message is returned
                         case "open":
-                            if (line[1].matches("[a-zA-Z]+") && line[1].length() <= 15) {
+                            if (line[1].length() <= 15) {
                                 double balance = Double.parseDouble(line[2]);
                                 int portA = Integer.parseInt(line[4]);
                                 int portB = Integer.parseInt(line[5]);
@@ -105,9 +105,9 @@ public class bank {
                             String cName = line[1];
                             int n = Integer.parseInt(line[2]);
                             String value = newCohort(cName, n);
-                            sendMembersInfo(cName);
-                            out.println(value);
-                            out.flush();
+                            sendMembersInfo(cName , value);
+//                            out.println(value);
+//                            out.flush();
                             break;
                         //If the delete-cohort command i received, function deleteCohort is called
                         case "delete-cohort":
@@ -138,6 +138,7 @@ public class bank {
                         case "print":
                             print();
                             break;
+                        
                         default:
                             out.println("FAILURE");
                             out.flush();
@@ -165,7 +166,7 @@ public class bank {
         
     }
     
-    public static boolean sendMembersInfo(String customerName) throws IOException{
+    public static boolean sendMembersInfo(String customerName , String cohortList) throws IOException{
         
         if (map.isEmpty() || !(map.containsKey(customerName))) {
             return false;
@@ -179,128 +180,26 @@ public class bank {
         List<customerInfo> cohort = currCust.getCohort();
         
         PrintWriter out = null;
-        ObjectOutputStream objectOutput = null;
         for (customerInfo i : cohort) {
   
                 out = new PrintWriter(i.getClientSocket().getOutputStream(), true);
-                out.println("You have been added to the cohort");
+                
+                out.println(cohort.size());
                 out.flush();
                 
-                objectOutput = new ObjectOutputStream(i.getClientSocket().getOutputStream());
-                objectOutput.writeObject(cohort);
-                objectOutput.close();
-    
+                
+                out.println("You have been added to the cohort");
+                out.flush(); 
+                
+                
+                
+                out.println(cohortList);
+                out.flush();
         }
 
         return true;
     }
     
-    
-    
-    public static class customerInfo implements Serializable {
-
-        String customerName;
-        double balance;
-        String IPv4;
-        int portA;
-        int portB;
-        Socket clientSocket;
-        ArrayList<customerInfo> cohort = new ArrayList<customerInfo>();
-
-        //customerInfo class defines the properties of the customer such as the name, balance, IPv4address etc.
-        public customerInfo(String customerName, double balance, String IPv4, int portA, int portB, Socket clientSocket) {
-            
-            //Customer information 
-            this.customerName = customerName;
-            this.balance = balance;
-            this.IPv4 = IPv4;
-            this.portA = portA;
-            this.portB = portB;
-            cohort = null;
-            this.clientSocket = clientSocket;
-        }
-        //Getters and Setter Functions
-
-        public Socket getClientSocket() {
-            return clientSocket;
-        }
-
-        public void setClientSocket(Socket clientSocket) {
-            this.clientSocket = clientSocket;
-        }
-
-        public ArrayList<customerInfo> getCohort() {
-            return cohort;
-        }
-
-        public void setCohort(ArrayList<customerInfo> cohort) {
-            this.cohort = cohort;
-        }
-
-        public String getName() {
-            return this.customerName;
-        }
-
-        public String getCustomerName() {
-            return customerName;
-        }
-
-        public double getBalance() {
-            return balance;
-        }
-
-        public String getIPv4() {
-            return IPv4;
-        }
-
-        public int getPortA() {
-            return portA;
-        }
-
-        public int getPortB() {
-            return portB;
-        }
-
-        public void setCustomerName(String customerName) {
-            this.customerName = customerName;
-        }
-
-        public void setBalance(double balance) {
-            this.balance = balance;
-        }
-
-        public void setIPv4(String IPv4) {
-            this.IPv4 = IPv4;
-        }
-
-        public void setPortA(int portA) {
-            this.portA = portA;
-        }
-
-        public void setPortB(int portB) {
-            this.portB = portB;
-        }
-
-        //Prints Customer Information
-        public void printCustomer() {
-            System.out.println("Customer Name : " + this.customerName);
-            System.out.println("Customer Balance : " + this.balance);
-            System.out.println("Cutomer IPv4 : " + this.IPv4);
-            System.out.println("PortA : " + this.portA);
-            System.out.println("PortB : " + this.portB + "\n");
-        }
-
-        public void printCohort() {
-            if (this.cohort.isEmpty()) {
-                System.out.println("Do not have a cohort");
-                return;
-            }
-            for (customerInfo i : cohort) {
-                i.printCustomer();
-            }
-        }
-
-    }
 
     //This method is to print all the customers in the bank and is used for testing purposes
     public static void print() {
@@ -355,19 +254,29 @@ public class bank {
         //formatted output to show the memebers added to the cohort to the customer who invoked the command
         if (count == n) {
             String ret = "SUCCESS\n";
-            ret += String.format("%s", "Customer");
-            ret += String.format("%30s", "Balance");
-            ret += String.format("%30s", "IPv4 Address");
-            ret += String.format("%30s", "Port(s)\n");
+            ret +=  "Customer";
+            ret += "\t" + "Balance";
+            ret += "\t" + "IPv4 Address";
+            ret += "\t" + "Port(s)" + "\n";
 
             for (int i = 0; i < generatedCohort.size(); i++) {
 
                 generatedCohort.get(i).setCohort(generatedCohort);
-                ret += String.format("%s", generatedCohort.get(i).getCustomerName());
-                ret += String.format("%30.3f", generatedCohort.get(i).getBalance());
-                ret += String.format("%30s", generatedCohort.get(i).getIPv4());
-                ret += String.format("%30d", generatedCohort.get(i).getPortA());
-                ret += " " + generatedCohort.get(i).getPortB() + "\n";
+                if(i == generatedCohort.size()-1){
+                    ret += generatedCohort.get(i).getCustomerName();
+                ret += "\t" + generatedCohort.get(i).getBalance();
+                ret += "\t" + generatedCohort.get(i).getIPv4();
+                ret += "\t" + generatedCohort.get(i).getPortA();
+                ret += "\t" + generatedCohort.get(i).getPortB();
+                }
+                else{
+                    ret += generatedCohort.get(i).getCustomerName();
+                ret += "\t" + generatedCohort.get(i).getBalance();
+                ret += "\t" + generatedCohort.get(i).getIPv4();
+                ret += "\t" + generatedCohort.get(i).getPortA();
+                ret += "\t" + generatedCohort.get(i).getPortB() + "\n" ;
+                }
+                
             }
             return ret;
         }
