@@ -26,7 +26,7 @@ public class customer {
 
         try {
             //Creating a New Socket Object and Assigning the Server IP address and port
-            bankSocket = new Socket("10.120.70.105", 14000);
+            bankSocket = new Socket("localhost", 14000);
             
             //Creating a Object of a class to Handle Received mesagges sent from server
             receieServer msgFromServer = new receieServer(bankSocket);
@@ -203,7 +203,7 @@ public class customer {
                                 o.close();
                             }
                             System.out.println("Checkpoiting Initiated\n");
-                            Thread.sleep(1200);
+                            Thread.sleep(500);
                             //Counter of 'yes' recived by the Initiater , if matches the number of clients in chk_cohort then Make it Permanent.
                             if (chk_counter == chkt_cohort.size()) {
                                 for (customerInfo i : chkt_cohort) {
@@ -218,7 +218,6 @@ public class customer {
                             } //Incase there would have been a fake transaction then checkpointing is not approved. Hence, automatically triggers the Rollback procedure.
                             else {
                                 System.out.println("Checkpointing Failed -> Initating Rollback...\n\n");
-                                Thread.sleep(1200);
                                 iniRollback("prepare_to_rollback");
                                 Thread.sleep(500);
                                 if (roll_counter == cohortList.size()) {
@@ -323,7 +322,7 @@ public class customer {
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 String input;
-                while ( !clientSocket.isClosed() && (input = in.readLine()) != null) {
+                while ( /*!clientSocket.isClosed() && */ (input = in.readLine()) != null) {
                     String command = "";
                     String[] line = input.split(" ");
                     command = line[0];
@@ -404,7 +403,8 @@ public class customer {
                             globalState.getLast_label_recv()[2] = tempState.getLast_label_recv()[2];
 
                             //Chaning the Global state in the local cohort List
-                            cohortList.put(globalState.getCustomerName(), globalState);
+                            //cohortList.put(globalState.getCustomerName(), globalState);
+                            Thread.sleep(800);
                             //Clearing the chkt_cohort and counter
                             chkt_cohort.clear();
                             chkt_cohort.add(globalState);
