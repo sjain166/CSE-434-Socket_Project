@@ -323,7 +323,7 @@ public class customer {
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 String input;
-                while ( /*!clientSocket.isClosed() && */(input = in.readLine()) != null) {
+                while ( !clientSocket.isClosed() && (input = in.readLine()) != null) {
                     String command = "";
                     String[] line = input.split(" ");
                     command = line[0];
@@ -461,7 +461,6 @@ public class customer {
         }
         //Creating a BR object
         BufferedReader in = null;
-        ObjectInputStream obj = null;
         //Defining the Runnable Object
 
         public void run() {
@@ -506,7 +505,7 @@ public class customer {
                 }
                 //Closing the BR object.
                 in.close();
-                obj.close();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
