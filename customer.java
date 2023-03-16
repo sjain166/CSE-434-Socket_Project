@@ -26,7 +26,7 @@ public class customer {
 
         try {
             //Creating a New Socket Object and Assigning the Server IP address and port
-            bankSocket = new Socket("localhost", 14000);
+            bankSocket = new Socket("100 10.120.70.105", 14000);
             
             //Creating a Object of a class to Handle Received mesagges sent from server
             receieServer msgFromServer = new receieServer(bankSocket);
