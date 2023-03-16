@@ -1,3 +1,5 @@
+
+
 --general3--window1
 javac bank.java
 java bank
@@ -15,13 +17,13 @@ javac customer.java
 java customer
 
 --window2--
-open c1 100 127.0.0.1 14001 14002
+open c1 100 10.120.70.146 14001 14002
 
 --window3--
-open c2 200 127.0.0.1 14003 14004
+open c2 200 10.120.70.113 14003 14004
 
 --window4
-open c3 200 127.0.0.1 14005 14006 
+open c3 200 10.120.70.113 14005 14006 
 new-cohort c3 3
 
 --window2--
