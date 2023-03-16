@@ -30,7 +30,7 @@ public class bank {
 
                 new Thread(clientSock).start();
 
-            } 
+            }
             //The code below will catch any exception thrown while starting the server and closes the server socket if it is not null
         } catch (IOException e) {
             e.printStackTrace();
@@ -44,14 +44,13 @@ public class bank {
             }
         }
     }
-    
-    
+
     // This class implements the Runnable interface to handle client requests
     private static class ClientHandler implements Runnable {
-        
+
         private final Socket clientSocket;
         private customerInfo customer;
-        
+
         //Constructors to set the clientSocket attributes
         public ClientHandler() {
             this.clientSocket = null;
@@ -65,14 +64,14 @@ public class bank {
             PrintWriter out = null;
             BufferedReader in = null;
             try {
-                
+
                 // The code below will handle the customer requests coming from the customer input stream and parsing that input
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 String input;
                 while (!clientSocket.isClosed() && (input = in.readLine()) != null) {
-                    
+
                     //The command from the customer side is split to check the first word and decide what to implement
                     String command = "";
                     String[] line = input.split(" ");
@@ -105,20 +104,22 @@ public class bank {
                             String cName = line[1];
                             int n = Integer.parseInt(line[2]);
                             String value = newCohort(cName, n);
-                            sendMembersInfo(cName , value);
-//                            out.println(value);
-//                            out.flush();
+                            sendMembersInfo(cName, value);
                             break;
                         //If the delete-cohort command i received, function deleteCohort is called
                         case "delete-cohort":
                             cName = line[1];
+//                            Socket socket = new Socket(map.get(cName).getIPv4() , map.get(cName).getPortB());
+//                            PrintWriter pw = new PrintWriter(socket.getOutputStream() , true);
+                            
                             if (deleteCohort(cName)) {
-                                out.println("SUCCESS\nThe cohort has been deleted");
+                                out.println("SUCCESS : The cohort has been deleted");
                                 out.flush();
                             } else {
                                 out.println("FAILURE");
                                 out.flush();
                             }
+                            
                             break;
                         //If the exit command is received we call the exit method 
                         case "exit":
@@ -138,8 +139,18 @@ public class bank {
                         case "print":
                             print();
                             break;
-                        
+                        case "update":
+                            map.get(line[1]).setBalance(Double.parseDouble(line[2]));
+                            System.out.println("The customer " + map.get(line[1]).getCustomerName() + " has been updated to " + map.get(line[1]).getBalance() + "\n");
+                            Thread.sleep(800);
+                            break;
+                        case "rollback":
+                            map.get(line[1]).setBalance(Double.parseDouble(line[2]));
+                            System.out.println("The customer " + map.get(line[1]).getCustomerName() + " has been rolled back to " + map.get(line[1]).getBalance()+"\n");
+                            Thread.sleep(800);
+                            break;
                         default:
+                            System.out.println(input);
                             out.println("FAILURE");
                             out.flush();
                             System.out.println("Incorrect Input");
@@ -163,11 +174,11 @@ public class bank {
                 }
             }
         }
-        
+
     }
-    
-    public static boolean sendMembersInfo(String customerName , String cohortList) throws IOException{
-        
+
+    public static boolean sendMembersInfo(String customerName, String cohortList) throws IOException {
+
         if (map.isEmpty() || !(map.containsKey(customerName))) {
             return false;
         }
@@ -178,28 +189,24 @@ public class bank {
         }
 
         List<customerInfo> cohort = currCust.getCohort();
-        
+
         PrintWriter out = null;
         for (customerInfo i : cohort) {
-  
-                out = new PrintWriter(i.getClientSocket().getOutputStream(), true);
-                
-                out.println(cohort.size());
-                out.flush();
-                
-                
-                out.println("You have been added to the cohort");
-                out.flush(); 
-                
-                
-                
-                out.println(cohortList);
-                out.flush();
+
+            out = new PrintWriter(i.getClientSocket().getOutputStream(), true);
+
+            out.println(cohort.size());
+            out.flush();
+
+            out.println("You have been added to the cohort");
+            out.flush();
+
+            out.println(cohortList);
+            out.flush();
         }
 
         return true;
     }
-    
 
     //This method is to print all the customers in the bank and is used for testing purposes
     public static void print() {
@@ -254,7 +261,7 @@ public class bank {
         //formatted output to show the memebers added to the cohort to the customer who invoked the command
         if (count == n) {
             String ret = "SUCCESS\n";
-            ret +=  "Customer";
+            ret += "Customer";
             ret += "\t" + "Balance";
             ret += "\t" + "IPv4 Address";
             ret += "\t" + "Port(s)" + "\n";
@@ -262,21 +269,20 @@ public class bank {
             for (int i = 0; i < generatedCohort.size(); i++) {
 
                 generatedCohort.get(i).setCohort(generatedCohort);
-                if(i == generatedCohort.size()-1){
+                if (i == generatedCohort.size() - 1) {
                     ret += generatedCohort.get(i).getCustomerName();
-                ret += "\t" + generatedCohort.get(i).getBalance();
-                ret += "\t" + generatedCohort.get(i).getIPv4();
-                ret += "\t" + generatedCohort.get(i).getPortA();
-                ret += "\t" + generatedCohort.get(i).getPortB();
-                }
-                else{
+                    ret += "\t" + generatedCohort.get(i).getBalance();
+                    ret += "\t" + generatedCohort.get(i).getIPv4();
+                    ret += "\t" + generatedCohort.get(i).getPortA();
+                    ret += "\t" + generatedCohort.get(i).getPortB();
+                } else {
                     ret += generatedCohort.get(i).getCustomerName();
-                ret += "\t" + generatedCohort.get(i).getBalance();
-                ret += "\t" + generatedCohort.get(i).getIPv4();
-                ret += "\t" + generatedCohort.get(i).getPortA();
-                ret += "\t" + generatedCohort.get(i).getPortB() + "\n" ;
+                    ret += "\t" + generatedCohort.get(i).getBalance();
+                    ret += "\t" + generatedCohort.get(i).getIPv4();
+                    ret += "\t" + generatedCohort.get(i).getPortA();
+                    ret += "\t" + generatedCohort.get(i).getPortB() + "\n";
                 }
-                
+
             }
             return ret;
         }
@@ -302,7 +308,7 @@ public class bank {
         for (customerInfo i : cohort) {
             if (i.getCustomerName() != customerName) {
                 out = new PrintWriter(i.getClientSocket().getOutputStream(), true);
-                out.println("You have been removed from the cohort.");
+                out.println("You have been removed from the cohort.\n");
                 out.flush();
             }
             i.setCohort(null);

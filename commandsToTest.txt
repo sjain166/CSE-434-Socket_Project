@@ -1,0 +1,72 @@
+--general3--window1
+javac bank.java
+java bank
+
+--general4--window2--
+javac customer.java
+java customer
+
+--general4--window3--
+javac customer.java
+java customer
+
+--general5--window4
+javac customer.java
+java customer
+
+--window2--
+open c1 100 127.0.0.1 14001 14002
+
+--window3--
+open c2 200 127.0.0.1 14003 14004
+
+--window4
+open c3 200 127.0.0.1 14005 14006 
+new-cohort c3 3
+
+--window2--
+deposit 50
+withdrawal 30
+
+--window4--
+deposit 10
+withdrawal 5
+
+--window3--
+transfer 40 c1
+
+--window4--
+transfer 50 c1
+
+--window2--
+checkpoint
+
+
+
+--window3--
+deposit 100
+withdrawal 30
+
+--window2--
+deposit 60
+withdrawal 20
+
+--window3--
+transfer 20 c3
+
+--window2--
+transfer 30 c3
+
+--window4--
+checkpoint
+
+--window3--
+deposit 60
+withdrawal 20
+lost-transfer 10 c1
+transfer 40 c1
+
+--anywindow--
+delete-cohort c1
+
+CTRL + C

@@ -4,16 +4,55 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class customerInfo implements Serializable {
-
+        
+        //Data Members
         String customerName;
         double balance;
         String IPv4;
         int portA;
         int portB;
         Socket clientSocket;
+        boolean resumeExecution;
         ArrayList<customerInfo> cohort = new ArrayList<customerInfo>();
         int[] last_label_recv = new int[4];
         int[] first_label_sent = new int[4];
+        boolean will_checkPoint = true;
+        boolean will_rollback;
+        boolean shouldRollBack = false;
+        
+        //Member Functions
+    public boolean isShouldRollBack() {
+        return shouldRollBack;
+    }
+
+    public void setShouldRollBack(boolean shouldRollBack) {
+        this.shouldRollBack = shouldRollBack;
+    }
+
+    public boolean isWill_rollback() {
+        return will_rollback;
+    }
+
+    public void setWill_rollback(boolean will_rollback) {
+        this.will_rollback = will_rollback;
+    }
+        
+
+    public boolean isResumeExecution() {
+        return resumeExecution;
+    }
+
+    public void setResumeExecution(boolean resumeExecution) {
+        this.resumeExecution = resumeExecution;
+    }
+
+    public boolean isWill_checkPoint() {
+        return will_checkPoint;
+    }
+
+    public void setWill_checkPoint(boolean will_checkPoint) {
+        this.will_checkPoint = will_checkPoint;
+    }
 
     public int[] getLast_label_recv() {
         return last_label_recv;
@@ -42,6 +81,10 @@ public class customerInfo implements Serializable {
             this.portB = portB;
             cohort = null;
             this.clientSocket = clientSocket;
+            resumeExecution = true;
+            will_rollback = true;
+            
+            
         }
         
          public customerInfo(String customerName, double balance, String IPv4, int portA, int portB) {
@@ -53,6 +96,8 @@ public class customerInfo implements Serializable {
             this.portA = portA;
             this.portB = portB;
             cohort = null;
+            resumeExecution = true;
+            will_rollback = true;
         }
         //Getters and Setter Functions
 
